@@ -124,20 +124,20 @@ final class BattalionGame: ObservableObject {
         road.position = SCNVector3(0, -0.16, -53)
         scene.rootNode.addChildNode(road)
 
-        for x: Float in [-5.55, 5.55] {
+        for x in ([-5.55, 5.55] as [Float]) {
             let edge = block(0.14, 0.2, 150, .cyan)
             edge.position = SCNVector3(x, 0.06, -53)
             scene.rootNode.addChildNode(edge)
         }
         for z in stride(from: -120, through: 12, by: 5) {
-            for x: Float in [-1.85, 1.85] {
+            for x in ([-1.85, 1.85] as [Float]) {
                 let stripe = block(0.07, 0.016, 2, .white)
                 stripe.position = SCNVector3(x, -0.07, Float(z))
                 scene.rootNode.addChildNode(stripe)
             }
         }
         for z in stride(from: -115, through: 14, by: 12) {
-            for side: Float in [-1, 1] {
+            for side in ([-1, 1] as [Float]) {
                 let height = Float.random(in: 2...9)
                 let building = block(CGFloat(Float.random(in: 1.2...3.5)), CGFloat(height), CGFloat(Float.random(in: 2...4)), NSColor(red: 0.055, green: 0.18, blue: 0.23, alpha: 1))
                 building.position = SCNVector3(side * Float.random(in: 9...18), height / 2, Float(z))
