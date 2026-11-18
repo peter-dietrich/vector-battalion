@@ -112,8 +112,8 @@ final class BattalionGame: ObservableObject {
         camera.camera?.fieldOfView = 58
         camera.camera?.zNear = 0.1
         camera.camera?.zFar = 180
-        camera.position = SCNVector3(0, 12.5, 19)
-        camera.look(at: SCNVector3(0, 0, -15))
+        camera.position = SCNVector3(0, 16, 23)
+        camera.look(at: SCNVector3(0, 0, -16))
         scene.rootNode.addChildNode(camera)
 
         let ground = block(240, 0.2, 240, NSColor(red: 0.055, green: 0.115, blue: 0.13, alpha: 1))
@@ -163,7 +163,7 @@ final class BattalionGame: ObservableObject {
     }
 
     private func updateFormation() {
-        let count = min(squad, 48)
+        let count = min(squad, 36)
         while soldiers.count < count {
             let member = soldier()
             squadRoot.addChildNode(member)
@@ -172,12 +172,15 @@ final class BattalionGame: ObservableObject {
         while soldiers.count > count {
             soldiers.removeLast().removeFromParentNode()
         }
-        // Center the formation around the player with rows that expand gradually.
+        // Compact formation fits inside the visible road and its actual size matches the HUD.
+        // Each row holds at most six soldiers; older recruits fill the front ranks first.
+        let columns = min(6, max(1, count))
         for (i, member) in soldiers.enumerated() {
-            let row = Int(sqrt(Double(i)))
-            let start = row * row
-            let column = i - start
-            member.position = SCNVector3(Float(column - row) * 0.58, 0, 5 + Float(row) * 0.72)
+            let row = i / columns
+            let column = i % columns
+            let itemsInRow = min(columns, count - row * columns)
+            let lateral = (Float(column) - Float(itemsInRow - 1) * 0.5) * 0.72
+            member.position = SCNVector3(lateral, 0, 1.15 + Float(row) * 0.64)
         }
     }
 
@@ -192,14 +195,14 @@ final class BattalionGame: ObservableObject {
             }
             let hp: Int
             switch kind {
-            case .upgrade: hp = 12 + 3 * wave
-            case .recruit: hp = 5 + 2 * wave
+            case .upgrade: hp = 15 + 4 * wave
+            case .recruit: hp = 8 + 3 * wave
             case .enemy: hp = 8 + 3 * wave
             }
             let reward: Int
             switch kind {
-            case .upgrade: reward = 4
-            case .recruit: reward = 2 + wave / 3
+            case .upgrade: reward = 2
+            case .recruit: reward = 1
             case .enemy: reward = 0
             }
             let color: NSColor
@@ -213,8 +216,8 @@ final class BattalionGame: ObservableObject {
             body.position.y = 1.2
             node.addChildNode(body)
 
-            let text = SCNText(string: String(hp), extrusionDepth: 0.05)
-            text.font = NSFont.monospacedDigitSystemFont(ofSize: 1, weight: .black)
+            let text = SCNText(string: kind == .enemy ? String(hp) : "\(hp)  +\(reward)", extrusionDepth: 0.05)
+            text.font = NSFont.monospacedDigitSystemFont(ofSize: 0.65, weight: .black)
             text.firstMaterial?.diffuse.contents = NSColor.black
             text.flatness = 0.08
             let label = SCNNode(geometry: text)
@@ -286,7 +289,9 @@ final class BattalionGame: ObservableObject {
                     if targets[targetIndex].hp <= 0 {
                         destroyed.insert(targetIndex)
                     } else {
-                        (targets[targetIndex].label.geometry as? SCNText)?.string = String(targets[targetIndex].hp)
+                        (targets[targetIndex].label.geometry as? SCNText)?.string = target.kind == .enemy
+                            ? String(targets[targetIndex].hp)
+                            : "\(targets[targetIndex].hp)  +\(target.reward)"
                     }
                     break
                 }
@@ -302,7 +307,8 @@ final class BattalionGame: ObservableObject {
             if target.kind == .enemy {
                 score += 75
             } else {
-                squad = min(120, squad + target.reward)
+                let gained = min(target.reward, 36 - squad)
+                squad += max(0, gained)
                 updateFormation()
                 score += 100 * target.reward
             }
