@@ -34,8 +34,9 @@ final class BattalionGame: ObservableObject {
     }
     struct Bullet {
         let node: SCNNode
-        let x: Float
+        var x: Float
         var z: Float
+        let velocityX: Float
         let damage: Int
     }
 
@@ -247,23 +248,43 @@ final class BattalionGame: ObservableObject {
             spawnRow()
         }
 
-        let cadence = max(0.065, 0.22 - Float(squad) * 0.004)
+        // Each soldier originates a shot from its own rifle. Mouse position selects
+        // the three-lane firing corridor; guns converge on the closest target there.
+        // Keeping an individual projectile per soldier makes added recruits visibly
+        // increase firepower instead of multiplying damage on a few center bullets.
+        let cadence: Float = 0.32
         if fireClock >= cadence {
-            fireClock = 0
-            let shots = min(3, max(1, squad / 5 + 1))
-            for i in 0..<shots {
-                let x = currentX + (Float(i) - Float(shots - 1) / 2) * 0.43
-                let orb = SCNNode(geometry: SCNSphere(radius: 0.115))
-                orb.geometry?.firstMaterial?.diffuse.contents = NSColor.cyan
-                orb.geometry?.firstMaterial?.lightingModel = .constant
-                orb.position = SCNVector3(x, 1.2, 3.7)
-                scene.rootNode.addChildNode(orb)
-                bullets.append(Bullet(node: orb, x: x, z: 3.7, damage: max(1, squad / 7)))
+            fireClock -= cadence
+            let activeLane = currentX < -1.85 ? 0 : (currentX > 1.85 ? 2 : 1)
+            let laneTargets = targets.filter { $0.lane == activeLane && $0.node.position.z < 3 }
+            let closestTarget = laneTargets.max { $0.node.position.z < $1.node.position.z }
+            let shooters = min(soldiers.count, 18)
+            if shooters > 0 {
+                for i in 0..<shooters {
+                    let soldierIndex = i * soldiers.count / shooters
+                    let member = soldiers[soldierIndex]
+                    let startX = currentX + Float(member.position.x) + 0.23
+                    let startZ = Float(member.position.z) - 0.9
+                    let targetX = closestTarget.map { lanes[$0.lane] } ?? lanes[activeLane]
+                    let targetZ = closestTarget.map { Float($0.node.position.z) } ?? -65
+                    let flightTime = max(0.2, (startZ - targetZ) / 52)
+                    let velocityX = (targetX - startX) / flightTime
+
+                    let orb = SCNNode(geometry: SCNSphere(radius: 0.095))
+                    orb.geometry?.firstMaterial?.diffuse.contents = NSColor.cyan
+                    orb.geometry?.firstMaterial?.lightingModel = .constant
+                    orb.position = SCNVector3(startX, 1.05, startZ)
+                    scene.rootNode.addChildNode(orb)
+                    bullets.append(Bullet(node: orb, x: startX, z: startZ,
+                                          velocityX: velocityX, damage: 1))
+                }
             }
         }
 
         for i in bullets.indices {
+            bullets[i].x += bullets[i].velocityX * dt
             bullets[i].z -= 52 * dt
+            bullets[i].node.position.x = CGFloat(bullets[i].x)
             bullets[i].node.position.z = CGFloat(bullets[i].z)
         }
         for i in targets.indices {
