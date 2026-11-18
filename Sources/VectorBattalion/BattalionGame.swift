@@ -190,9 +190,24 @@ final class BattalionGame: ObservableObject {
             } else {
                 kind = Bool.random() ? .recruit : .enemy
             }
-            let hp = kind == .upgrade ? 12 + 3 * wave : kind == .recruit ? 5 + 2 * wave : 8 + 3 * wave
-            let reward = kind == .upgrade ? 4 : kind == .recruit ? 2 + wave / 3 : 0
-            let color: NSColor = kind == .enemy ? .systemRed : kind == .upgrade ? .systemYellow : .systemCyan
+            let hp: Int
+            switch kind {
+            case .upgrade: hp = 12 + 3 * wave
+            case .recruit: hp = 5 + 2 * wave
+            case .enemy: hp = 8 + 3 * wave
+            }
+            let reward: Int
+            switch kind {
+            case .upgrade: reward = 4
+            case .recruit: reward = 2 + wave / 3
+            case .enemy: reward = 0
+            }
+            let color: NSColor
+            switch kind {
+            case .enemy: color = .systemRed
+            case .upgrade: color = .systemYellow
+            case .recruit: color = .systemCyan
+            }
             let node = SCNNode()
             let body = block(2.45, 2.25, 1.7, color)
             body.position.y = 1.2
@@ -204,7 +219,8 @@ final class BattalionGame: ObservableObject {
             text.flatness = 0.08
             let label = SCNNode(geometry: text)
             let bounds = text.boundingBox
-            label.position = SCNVector3(-(bounds.max.x - bounds.min.x) / 2, 1.18, 0.93)
+            let labelOffset = -Float(bounds.max.x - bounds.min.x) / 2
+            label.position = SCNVector3(labelOffset, 1.18, 0.93)
             node.addChildNode(label)
             node.position = SCNVector3(lanes[lane], 0, -68)
             scene.rootNode.addChildNode(node)
@@ -219,7 +235,7 @@ final class BattalionGame: ObservableObject {
         lastTime = time
         elapsed += dt
         currentX += (desiredX - currentX) * min(1, dt * 13)
-        squadRoot.position.x = currentX
+        squadRoot.position.x = CGFloat(currentX)
 
         spawnClock += dt
         fireClock += dt
@@ -245,10 +261,10 @@ final class BattalionGame: ObservableObject {
 
         for i in bullets.indices {
             bullets[i].z -= 52 * dt
-            bullets[i].node.position.z = bullets[i].z
+            bullets[i].node.position.z = CGFloat(bullets[i].z)
         }
         for i in targets.indices {
-            targets[i].node.position.z += (8 + Float(wave) * 0.65) * dt
+            targets[i].node.position.z += CGFloat((8 + Float(wave) * 0.65) * dt)
         }
 
         var hitBullets = Set<Int>()
@@ -261,7 +277,10 @@ final class BattalionGame: ObservableObject {
             }
             for targetIndex in targets.indices where !destroyed.contains(targetIndex) {
                 let target = targets[targetIndex]
-                if abs(shot.z - target.node.position.z) < 1 && abs(shot.x - lanes[target.lane]) < 1.35 {
+                let targetZ = Float(target.node.position.z)
+                let withinDepth = abs(shot.z - targetZ) < 1
+                let withinLane = abs(shot.x - lanes[target.lane]) < 1.35
+                if withinDepth && withinLane {
                     hitBullets.insert(bulletIndex)
                     targets[targetIndex].hp -= shot.damage
                     if targets[targetIndex].hp <= 0 {
@@ -292,7 +311,7 @@ final class BattalionGame: ObservableObject {
         var passed: [Int] = []
         for index in targets.indices where targets[index].node.position.z > 5.5 {
             let target = targets[index]
-            if abs(target.node.position.x - currentX) < 2.3 && target.kind == .enemy {
+            if abs(Float(target.node.position.x) - currentX) < 2.3 && target.kind == .enemy {
                 squad = max(0, squad - max(1, wave / 2))
                 updateFormation()
             }
