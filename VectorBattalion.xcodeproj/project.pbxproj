@@ -1,0 +1,69 @@
+// !$*UTF8*$!
+{
+ archiveVersion = 1;
+ classes = {};
+ objectVersion = 56;
+ objects = {
+  BA0000000000000000000001 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/VectorBattalion/VectorBattalionApp.swift; sourceTree = "<group>"; };
+  BA0000000000000000000002 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/VectorBattalion/BattalionGame.swift; sourceTree = "<group>"; };
+  BA0000000000000000000003 = { isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VectorBattalion.app; sourceTree = BUILT_PRODUCTS_DIR; };
+  BA0000000000000000000004 = { isa = PBXBuildFile; fileRef = BA0000000000000000000001; };
+  BA0000000000000000000005 = { isa = PBXBuildFile; fileRef = BA0000000000000000000002; };
+  BA0000000000000000000006 = { isa = PBXGroup; children = (BA0000000000000000000001, BA0000000000000000000002, BA0000000000000000000007); sourceTree = "<group>"; };
+  BA0000000000000000000007 = { isa = PBXGroup; children = (BA0000000000000000000003); name = Products; sourceTree = "<group>"; };
+  BA0000000000000000000008 = {
+    isa = PBXNativeTarget;
+    buildConfigurationList = BA000000000000000000000A;
+    buildPhases = (BA0000000000000000000009);
+    buildRules = ();
+    dependencies = ();
+    name = VectorBattalion;
+    productName = VectorBattalion;
+    productReference = BA0000000000000000000003;
+    productType = "com.apple.product-type.application";
+  };
+  BA000000000000000000000B = {
+    isa = PBXProject;
+    attributes = { LastUpgradeCheck = 1600; TargetAttributes = { BA0000000000000000000008 = { CreatedOnToolsVersion = 16.0; }; }; };
+    buildConfigurationList = BA000000000000000000000C;
+    compatibilityVersion = "Xcode 14.0";
+    developmentRegion = en;
+    hasScannedForEncodings = 0;
+    knownRegions = (en, Base);
+    mainGroup = BA0000000000000000000006;
+    productRefGroup = BA0000000000000000000007;
+    projectDirPath = "";
+    projectRoot = "";
+    targets = (BA0000000000000000000008);
+  };
+  BA0000000000000000000009 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (BA0000000000000000000004, BA0000000000000000000005); runOnlyForDeploymentPostprocessing = 0; };
+  BA000000000000000000000A = { isa = XCConfigurationList; buildConfigurations = (BA000000000000000000000D, BA000000000000000000000E); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+  BA000000000000000000000C = { isa = XCConfigurationList; buildConfigurations = (BA000000000000000000000F, BA0000000000000000000010); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+  BA000000000000000000000D = { isa = XCBuildConfiguration; buildSettings = {
+    CODE_SIGNING_ALLOWED = NO;
+    GENERATE_INFOPLIST_FILE = YES;
+    INFOPLIST_KEY_CFBundleDisplayName = "Vector Battalion";
+    INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+    INFOPLIST_KEY_NSHighResolutionCapable = YES;
+    MACOSX_DEPLOYMENT_TARGET = 13.0;
+    PRODUCT_BUNDLE_IDENTIFIER = "io.vectorbattalion.game";
+    PRODUCT_NAME = "$(TARGET_NAME)";
+    SWIFT_VERSION = 5.0;
+  }; name = Debug; };
+  BA000000000000000000000E = { isa = XCBuildConfiguration; buildSettings = {
+    CODE_SIGNING_ALLOWED = NO;
+    GENERATE_INFOPLIST_FILE = YES;
+    INFOPLIST_KEY_CFBundleDisplayName = "Vector Battalion";
+    INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+    INFOPLIST_KEY_NSHighResolutionCapable = YES;
+    MACOSX_DEPLOYMENT_TARGET = 13.0;
+    PRODUCT_BUNDLE_IDENTIFIER = "io.vectorbattalion.game";
+    PRODUCT_NAME = "$(TARGET_NAME)";
+    SWIFT_OPTIMIZATION_LEVEL = "-O";
+    SWIFT_VERSION = 5.0;
+  }; name = Release; };
+  BA000000000000000000000F = { isa = XCBuildConfiguration; buildSettings = { CODE_SIGNING_ALLOWED = NO; SDKROOT = macosx; MACOSX_DEPLOYMENT_TARGET = 13.0; SWIFT_VERSION = 5.0; }; name = Debug; };
+  BA0000000000000000000010 = { isa = XCBuildConfiguration; buildSettings = { CODE_SIGNING_ALLOWED = NO; SDKROOT = macosx; MACOSX_DEPLOYMENT_TARGET = 13.0; SWIFT_OPTIMIZATION_LEVEL = "-O"; SWIFT_VERSION = 5.0; }; name = Release; };
+ };
+ rootObject = BA000000000000000000000B;
+}
