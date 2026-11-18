@@ -14,7 +14,9 @@ A native macOS three-lane auto-shooter built with SwiftUI and SceneKit. Steer a 
 
 Requires macOS 13+ and Xcode 16+.
 
-Open `Package.swift` with Xcode, select the **VectorBattalion** executable scheme and run on **My Mac**. Alternatively:
+**Recommended:** Open `VectorBattalion.xcodeproj` with Xcode, select the **VectorBattalion** app scheme and run on **My Mac**. The Xcode project builds a proper macOS `.app` with bundle identifier `io.vectorbattalion.game`, avoiding the missing bundle identifier warning associated with running the Swift package executable.
+
+For command-line development, the original Swift package remains available:
 
 ```sh
 swift run VectorBattalion
